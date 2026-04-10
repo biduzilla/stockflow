@@ -1,14 +1,14 @@
 package stockflow.com.br.ms_auth.security
 
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
+import stockflow.com.br.ms_auth.exceptions.InvalidTokenException
 import java.security.Key
+import java.security.SignatureException
 import java.util.*
 
 interface IJwtService {
@@ -115,11 +115,23 @@ class JwtService : IJwtService {
         extractExpiration(token).before(Date())
 
     private fun extractAllClaims(token: String): Claims =
-        Jwts
-            .parserBuilder()
-            .setSigningKey(getSignInKey())
-            .build()
-            .parseClaimsJws(token)
-            .body
+        try {
+            Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .body
+        } catch (e: SignatureException) {
+            throw InvalidTokenException("Token signature is invalid")
+        } catch (e: ExpiredJwtException) {
+            throw InvalidTokenException("Token has expired")
+        } catch (e: MalformedJwtException) {
+            throw InvalidTokenException("Token is malformed")
+        } catch (e: UnsupportedJwtException) {
+            throw InvalidTokenException("Token is unsupported")
+        } catch (e: IllegalArgumentException) {
+            throw InvalidTokenException("Token is empty or null")
+        }
 
 }
