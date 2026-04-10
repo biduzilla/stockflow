@@ -32,5 +32,4 @@ fun User.toDTO(): UserDTO = UserDTO(
     id = id,
     name = name,
     email = email,
-    password = ""
 )
