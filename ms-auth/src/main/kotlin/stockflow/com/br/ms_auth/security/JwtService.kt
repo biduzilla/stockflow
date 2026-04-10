@@ -16,8 +16,11 @@ interface IJwtService {
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T
     fun generateToken(userDetails: UserDetails): String
     fun generateToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String
+    fun generateRefreshToken(userDetails: UserDetails): String
     fun getExpirationTime(): Long
+    fun getRefreshExpirationTime(): Long
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean
+    fun isRefreshTokenValid(token: String, userDetails: UserDetails): Boolean
 }
 
 @Service
@@ -28,30 +31,63 @@ class JwtService : IJwtService {
     @Value($$"${security.jwt.expiration-time}")
     private var jwtExpiration: Long = 0
 
+    @Value("\${security.jwt.refresh-expiration-time}")
+    private var refreshExpiration: Long = 86400000
+
+    override fun extractUsername(token: String): String {
+        return extractClaim(
+            token,
+            Claims::getSubject
+        )
+    }
+
     override fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
-return claimsResolver(extractClaim())
+        return claimsResolver(extractAllClaims(token))
     }
 
     override fun generateToken(userDetails: UserDetails): String {
-        TODO("Not yet implemented")
+        return generateToken(emptyMap(), userDetails)
     }
 
     override fun generateToken(
         extraClaims: Map<String, Any>,
         userDetails: UserDetails
     ): String {
-        TODO("Not yet implemented")
+        return buildToken(extraClaims, userDetails, getExpirationTime())
     }
 
-    override fun getExpirationTime(): Long {
-        TODO("Not yet implemented")
+    override fun generateRefreshToken(userDetails: UserDetails): String {
+        return buildToken(
+            mapOf("type" to "refresh"),
+            userDetails,
+            getRefreshExpirationTime()
+        )
     }
+
+    override fun getExpirationTime(): Long = jwtExpiration
+
+    override fun getRefreshExpirationTime(): Long = refreshExpiration
 
     override fun isTokenValid(
         token: String,
         userDetails: UserDetails
     ): Boolean {
-        TODO("Not yet implemented")
+        val userName: String = userDetails.username
+        return (userName == userDetails.username) && isTokenExpired(token)
+    }
+
+    override fun isRefreshTokenValid(
+        token: String,
+        userDetails: UserDetails
+    ): Boolean {
+        val userName = extractUsername(token)
+        val tokenType = extractClaim(token) { claims ->
+            claims.get("type", String::class.java)
+        }
+
+        return userName == userDetails.username
+                && isTokenExpired(tokenType)
+                && tokenType == "refresh"
     }
 
     private fun buildToken(
@@ -83,7 +119,7 @@ return claimsResolver(extractClaim())
             .parserBuilder()
             .setSigningKey(getSignInKey())
             .build()
-            .parseClaimsJwt(token)
+            .parseClaimsJws(token)
             .body
 
 }
