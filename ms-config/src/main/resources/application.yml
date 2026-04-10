@@ -6,8 +6,8 @@ spring:
   cloud:
     config:
       server:
-        uri:
-        search-paths: "configserver/src/main/resources/config"
+        uri: "https://github.com/biduzilla/stockflow.git"
+        search-paths: "ms-config/src/main/resources/config"
         default-label: main
         timeout: 5
         clone-on-start: true
