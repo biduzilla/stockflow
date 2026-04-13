@@ -19,6 +19,7 @@ server:
 
 security:
   jwt:
-    secret-key: 29e173be957eb2e6981cc208b67247ff8f894a632764f65ede6cba377d534663
+    private-key: classpath:keys/private.pem
+    public-key: classpath:keys/public.pem
     expiration-time: 3600000
     refresh-expiration-time: 604800000

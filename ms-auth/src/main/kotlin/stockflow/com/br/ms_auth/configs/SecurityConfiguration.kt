@@ -22,9 +22,13 @@ class SecurityConfiguration(
         http.run {
             csrf { it.disable() }
             authorizeHttpRequests { auth ->
-                auth.requestMatchers("/api/auth/**").permitAll()
-                    .anyRequest().authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+                auth
+                    .requestMatchers("/api/auth/**").permitAll()
+
+                    .requestMatchers(
+                        HttpMethod.POST,
+                        "/api/user"
+                    ).permitAll()
 
                     .anyRequest().authenticated()
             }

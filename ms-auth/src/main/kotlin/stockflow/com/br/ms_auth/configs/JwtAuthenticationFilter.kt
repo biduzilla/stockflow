@@ -7,22 +7,24 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver
+import org.springframework.web.servlet.HandlerExceptionResolver
 import stockflow.com.br.ms_auth.exceptions.InvalidTokenException
 import stockflow.com.br.ms_auth.security.IJwtService
 
+@Component
 class JwtAuthenticationFilter(
     private val jwtService: IJwtService,
     private val userDetailsService: UserDetailsService,
-    private val handlerExceptionResolver: ExceptionHandlerExceptionResolver
+    private val handlerExceptionResolver: HandlerExceptionResolver
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authHeader: String = request.getHeader("Authorization")
+        val authHeader: String = request.getHeader("Authorization") ?: ""
 
         if (authHeader.isBlank() || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response)
@@ -52,7 +54,33 @@ class JwtAuthenticationFilter(
             }
             filterChain.doFilter(request, response)
         } catch (e: Exception) {
-            handlerExceptionResolver.resolveException(request, response, null, e)
+            handlerExceptionResolver
+                .resolveException(
+                    request,
+                    response,
+                    null,
+                    e
+                )
         }
     }
+
+//    private fun sendErrorResponse(
+//        request: HttpServletRequest,
+//        response: HttpServletResponse,
+//        status: HttpStatus,
+//        message: String
+//    ) {
+//        response.status = status.value()
+//        response.contentType = MediaType.APPLICATION_JSON_VALUE
+//
+//        val errorDTO = ErrorDTO(
+//            status = status.value(),
+//            error = status.name,
+//            message = message,
+//            path = request.requestURI,
+//            timestamp = LocalDateTime.now()
+//        )
+//
+//        objectMapper.writeValue(response.writer, errorDTO)
+//    }
 }

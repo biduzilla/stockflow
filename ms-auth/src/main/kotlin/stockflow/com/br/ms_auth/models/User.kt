@@ -18,13 +18,13 @@ data class User(
     var id: UUID? = null,
     var name: String,
     var email: String,
-    var password: String = "",
+    var keyword: String = "",
     var role: RoleEnum = RoleEnum.CLIENT
 ) : BaseModel(), UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> =
         listOf(SimpleGrantedAuthority(role.authority))
 
-    override fun getPassword(): String? = password
+    override fun getPassword(): String? = keyword
     override fun getUsername(): String = email
 }
 

@@ -15,18 +15,18 @@ data class RegisterUserDTO(
         regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s]+$",
         message = "Name must contain only letters and spaces"
     )
-    var name: String,
-
+    var name: String = "",
     @field:NotBlank(message = "Email is required")
     @field:Email(message = "Invalid email format")
     @field:Size(max = 100, message = "Email must be at most 100 characters")
-    var email: String,
-    var password: String,
+    var email: String = "",
+    @field:NotBlank(message = "Password is required")
+    var password: String = "",
 )
 
 fun RegisterUserDTO.toModel(): User = User(
     id = id,
     name = name,
     email = email,
-    password = password
+    keyword = password
 )

@@ -24,10 +24,10 @@ class UserService(
         if (existsByEmail(user.email)) {
             throw BadRequestException("Email already exists")
         }
-        verifyPassword(user.password)
+        verifyPassword(user.keyword)
 
         return userRepository.save(user.apply {
-            password = passwordEncoder.encode(user.password).orEmpty()
+            keyword = passwordEncoder.encode(user.password).orEmpty()
         })
     }
 

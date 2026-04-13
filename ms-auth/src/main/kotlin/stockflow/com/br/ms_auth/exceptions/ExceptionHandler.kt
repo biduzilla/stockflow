@@ -3,6 +3,7 @@ package stockflow.com.br.ms_auth.exceptions
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -27,9 +28,25 @@ class ExceptionHandler {
         )
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadable(
+        exception: HttpMessageNotReadableException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorDTO> {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorDTO(
+                status = HttpStatus.BAD_REQUEST.value(),
+                error = HttpStatus.BAD_REQUEST.name,
+                message = "Malformed JSON or missing required fields",
+                path = request.servletPath
+            )
+        )
+    }
+
     @ExceptionHandler(BadRequestException::class)
     fun handleBadRequestException(
-        exception: BadCredentialsException,
+        exception: BadRequestException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorDTO> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(

@@ -1,5 +1,6 @@
 package stockflow.com.br.ms_auth.controllers
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,7 +17,7 @@ import stockflow.com.br.ms_auth.services.IUserService
 @RequestMapping("/api/user")
 class UserController(private val userService: IUserService) {
     @PostMapping
-    fun register(@RequestBody user: RegisterUserDTO): ResponseEntity<UserDTO> {
+    fun register(@Valid @RequestBody user: RegisterUserDTO): ResponseEntity<UserDTO> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(userService.save(user.toModel()).toDTO())
     }

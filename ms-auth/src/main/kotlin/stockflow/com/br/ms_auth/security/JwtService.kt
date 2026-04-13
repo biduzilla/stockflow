@@ -1,14 +1,17 @@
 package stockflow.com.br.ms_auth.security
 
 import io.jsonwebtoken.*
-import io.jsonwebtoken.io.Decoders
-import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.Resource
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import stockflow.com.br.ms_auth.exceptions.InvalidTokenException
-import java.security.Key
-import java.security.SignatureException
+import stockflow.com.br.ms_auth.models.User
+import java.security.KeyFactory
+import java.security.PrivateKey
+import java.security.PublicKey
+import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
 interface IJwtService {
@@ -24,30 +27,25 @@ interface IJwtService {
 }
 
 @Service
-class JwtService : IJwtService {
-    @Value($$"${security.jwt.secret-key}")
-    private lateinit var secretKey: String
+class JwtService(
+    @Value($$"${security.jwt.private-key}") private val privateKeyResource: Resource,
+    @Value($$"${security.jwt.public-key}") private val publicKeyResource: Resource,
+    @Value($$"${security.jwt.expiration-time}") private val jwtExpiration: Long,
+    @Value($$"${security.jwt.refresh-expiration-time}") private val refreshExpiration: Long
+) : IJwtService {
 
-    @Value($$"${security.jwt.expiration-time}")
-    private var jwtExpiration: Long = 0
+    private val privateKey: PrivateKey by lazy { loadPrivateKey() }
+    private val publicKey: PublicKey by lazy { loadPublicKey() }
 
-    @Value("\${security.jwt.refresh-expiration-time}")
-    private var refreshExpiration: Long = 86400000
+    override fun extractUsername(token: String): String =
+        extractClaim(token, Claims::getSubject)
 
-    override fun extractUsername(token: String): String {
-        return extractClaim(
-            token,
-            Claims::getSubject
-        )
-    }
 
-    override fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
-        return claimsResolver(extractAllClaims(token))
-    }
+    override fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T =
+        claimsResolver(extractAllClaims(token))
 
-    override fun generateToken(userDetails: UserDetails): String {
-        return generateToken(emptyMap(), userDetails)
-    }
+    override fun generateToken(userDetails: UserDetails): String =
+        generateToken(emptyMap(), userDetails)
 
     override fun generateToken(
         extraClaims: Map<String, Any>,
@@ -56,13 +54,12 @@ class JwtService : IJwtService {
         return buildToken(extraClaims, userDetails, getExpirationTime())
     }
 
-    override fun generateRefreshToken(userDetails: UserDetails): String {
-        return buildToken(
+    override fun generateRefreshToken(userDetails: UserDetails): String =
+        buildToken(
             mapOf("type" to "refresh"),
             userDetails,
             getRefreshExpirationTime()
         )
-    }
 
     override fun getExpirationTime(): Long = jwtExpiration
 
@@ -72,8 +69,8 @@ class JwtService : IJwtService {
         token: String,
         userDetails: UserDetails
     ): Boolean {
-        val userName: String = userDetails.username
-        return (userName == userDetails.username) && isTokenExpired(token)
+        val userName: String = extractUsername(token)
+        return userName == userDetails.username && !isTokenExpired(token)
     }
 
     override fun isRefreshTokenValid(
@@ -81,12 +78,10 @@ class JwtService : IJwtService {
         userDetails: UserDetails
     ): Boolean {
         val userName = extractUsername(token)
-        val tokenType = extractClaim(token) { claims ->
-            claims.get("type", String::class.java)
-        }
+        val tokenType = extractClaim(token) { it["type", String::class.java] }
 
         return userName == userDetails.username
-                && isTokenExpired(tokenType)
+                && !isTokenExpired(token)
                 && tokenType == "refresh"
     }
 
@@ -94,17 +89,19 @@ class JwtService : IJwtService {
         extraClaims: Map<String, Any>,
         userDetails: UserDetails,
         expirationTime: Long,
-    ): String = Jwts.builder()
-        .setClaims(extraClaims)
-        .setSubject(userDetails.username)
-        .setIssuedAt(Date(System.currentTimeMillis()))
-        .setExpiration(Date(System.currentTimeMillis() + expirationTime))
-        .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-        .compact()
+    ): String {
+        val user = userDetails as User
 
-    private fun getSignInKey(): Key {
-        val keyBytes = Decoders.BASE64.decode(secretKey)
-        return Keys.hmacShaKeyFor(keyBytes)
+        return Jwts.builder()
+            .setClaims(extraClaims)
+            .setSubject(userDetails.username)
+            .claim("userId", user.id.toString())
+            .claim("name", user.name)
+            .claim("roles", user.authorities.map { it.authority })
+            .setIssuedAt(Date(System.currentTimeMillis()))
+            .setExpiration(Date(System.currentTimeMillis() + expirationTime))
+            .signWith(privateKey, SignatureAlgorithm.RS256)
+            .compact()
     }
 
     private fun extractExpiration(token: String): Date {
@@ -118,20 +115,41 @@ class JwtService : IJwtService {
         try {
             Jwts
                 .parserBuilder()
-                .setSigningKey(getSignInKey())
+                .setSigningKey(publicKey)
                 .build()
                 .parseClaimsJws(token)
                 .body
-        } catch (e: SignatureException) {
-            throw InvalidTokenException("Token signature is invalid")
         } catch (e: ExpiredJwtException) {
-            throw InvalidTokenException("Token has expired")
+            throw InvalidTokenException("Token expirado")
         } catch (e: MalformedJwtException) {
-            throw InvalidTokenException("Token is malformed")
+            throw InvalidTokenException("Token malformado")
         } catch (e: UnsupportedJwtException) {
-            throw InvalidTokenException("Token is unsupported")
+            throw InvalidTokenException("Token não suportado")
         } catch (e: IllegalArgumentException) {
-            throw InvalidTokenException("Token is empty or null")
+            throw InvalidTokenException("Token vazio ou nulo")
+        } catch (e: JwtException) {
+            throw InvalidTokenException("Token inválido")
         }
 
+    private fun loadPrivateKey(): PrivateKey {
+        val pem = privateKeyResource.inputStream.bufferedReader().readText()
+            .replace("-----BEGIN PRIVATE KEY-----", "")
+            .replace("-----END PRIVATE KEY-----", "")
+            .replace("-----BEGIN RSA PRIVATE KEY-----", "")
+            .replace("-----END RSA PRIVATE KEY-----", "")
+            .replace("\\s".toRegex(), "")
+        val keyByte = Base64.getDecoder().decode(pem)
+        return KeyFactory.getInstance("RSA")
+            .generatePrivate(PKCS8EncodedKeySpec(keyByte))
+    }
+
+    private fun loadPublicKey(): PublicKey {
+        val pem = publicKeyResource.inputStream.bufferedReader().readText()
+            .replace("-----BEGIN PUBLIC KEY-----", "")
+            .replace("-----END PUBLIC KEY-----", "")
+            .replace("\\s".toRegex(), "")
+        val keyBytes = Base64.getDecoder().decode(pem)
+        return KeyFactory.getInstance("RSA")
+            .generatePublic(X509EncodedKeySpec(keyBytes))
+    }
 }

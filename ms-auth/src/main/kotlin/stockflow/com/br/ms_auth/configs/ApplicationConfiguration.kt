@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import stockflow.com.br.ms_auth.services.IUserService
 
@@ -15,17 +14,13 @@ import stockflow.com.br.ms_auth.services.IUserService
 @Configuration
 class ApplicationConfiguration(
     private val userService: IUserService,
+    private val passwordEncoder: PasswordEncoder
 ) {
     @Bean
     fun userDetailsService(): UserDetailsService {
         return UserDetailsService { username ->
             userService.findByEmail(username)
         }
-    }
-
-    @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
     }
 
     @Bean
@@ -36,7 +31,7 @@ class ApplicationConfiguration(
     @Bean
     fun authenticationProvider(): AuthenticationProvider {
         val authProvider = DaoAuthenticationProvider(userDetailsService())
-        authProvider.setPasswordEncoder(passwordEncoder())
+        authProvider.setPasswordEncoder(passwordEncoder)
         return authProvider
     }
 }

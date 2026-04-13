@@ -3,7 +3,7 @@ package stockflow.com.br.ms_auth.audit
 import org.springframework.data.domain.AuditorAware
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
-import java.util.Optional
+import java.util.*
 
 @Component("auditAwareImpl")
 class AuditAwareImpl : AuditorAware<String> {
