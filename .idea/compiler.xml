@@ -6,9 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ms-config" />
         <module name="ms-auth" />
         <module name="ms-order" />
+        <module name="ms-config" />
       </profile>
     </annotationProcessing>
   </component>
