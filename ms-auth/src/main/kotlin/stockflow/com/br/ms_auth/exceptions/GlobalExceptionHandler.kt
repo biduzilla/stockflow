@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import stockflow.com.br.ms_auth.dtos.ErrorDTO
 
 @RestControllerAdvice
-class ExceptionHandler {
+class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException::class)
     fun handleBadCredentialsException(
@@ -61,7 +61,7 @@ class ExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException::class)
     fun handleInvalidTokenException(
-        exception: BadCredentialsException,
+        exception: InvalidTokenException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorDTO> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
@@ -76,7 +76,7 @@ class ExceptionHandler {
 
     @ExceptionHandler(NotFoundException::class)
     fun handleNotFoundException(
-        exception: BadCredentialsException,
+        exception: NotFoundException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorDTO> {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(

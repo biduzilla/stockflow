@@ -1,4 +1,4 @@
 package stockflow.com.br.ms_auth.exceptions
 
-class InvalidTokenException(msg: String) : RuntimeException() {
+class InvalidTokenException(msg: String) : RuntimeException(msg) {
 }

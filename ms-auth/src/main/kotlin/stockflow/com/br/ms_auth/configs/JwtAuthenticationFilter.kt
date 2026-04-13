@@ -17,7 +17,7 @@ import stockflow.com.br.ms_auth.security.IJwtService
 class JwtAuthenticationFilter(
     private val jwtService: IJwtService,
     private val userDetailsService: UserDetailsService,
-    private val handlerExceptionResolver: HandlerExceptionResolver
+    private val handlerExceptionResolver: HandlerExceptionResolver,
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
