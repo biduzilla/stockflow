@@ -15,5 +15,10 @@ spring:
           force-pull: true
           refresh-rate: 60
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.context.annotation: DEBUG
+
 server:
   port: 8071

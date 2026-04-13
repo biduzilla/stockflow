@@ -1,7 +1,6 @@
 package com.br.shared.configs
 
 import com.br.shared.security.IJwtService
-import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
@@ -15,8 +14,7 @@ abstract class BaseSecurityConfiguration(
 ) {
     abstract fun configureRoutes(auth: org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry)
 
-    @Bean
-    open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun buildSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
         val filter = JwtAuthenticationFilter(jwtService, handlerExceptionResolver)
 
         http.run {
