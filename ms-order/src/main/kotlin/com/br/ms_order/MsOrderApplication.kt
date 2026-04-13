@@ -3,7 +3,7 @@ package com.br.ms_order
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(scanBasePackages = ["com.br"])
+@SpringBootApplication
 class MsOrderApplication
 
 fun main(args: Array<String>) {

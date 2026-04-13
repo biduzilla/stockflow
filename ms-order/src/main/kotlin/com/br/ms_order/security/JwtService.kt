@@ -1,6 +1,6 @@
-package com.br.shared.security
+package com.br.ms_order.security
 
-import com.br.shared.exceptions.InvalidTokenException
+import com.br.ms_order.exceptions.InvalidTokenException
 import io.jsonwebtoken.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
@@ -18,6 +18,7 @@ interface IJwtService {
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean
 }
 
+@Service
 class JwtService(
     @Value($$"${security.jwt.public-key}") private val publicKeyResource: Resource,
 ) : IJwtService {

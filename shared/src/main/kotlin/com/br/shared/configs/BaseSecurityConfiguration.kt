@@ -15,16 +15,33 @@ abstract class BaseSecurityConfiguration(
     abstract fun configureRoutes(auth: org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry)
 
     fun buildSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
+
         val filter = JwtAuthenticationFilter(jwtService, handlerExceptionResolver)
 
         http.run {
+
             csrf { it.disable() }
-            authorizeHttpRequests { configureRoutes(it) }
-            sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            exceptionHandling { exception ->
-                exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+
+            httpBasic { it.disable() }
+
+            formLogin { it.disable() }
+
+            authorizeHttpRequests {
+                configureRoutes(it)
             }
-            addFilterBefore(filter, UsernamePasswordAuthenticationFilter::class.java)
+
+            sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+
+            exceptionHandling {
+                it.authenticationEntryPoint(customAuthenticationEntryPoint)
+            }
+
+            addFilterBefore(
+                filter,
+                UsernamePasswordAuthenticationFilter::class.java
+            )
         }
 
         return http.build()
