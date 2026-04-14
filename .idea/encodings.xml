@@ -4,6 +4,8 @@
     <file url="file://$PROJECT_DIR$/ms-auth/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ms-config/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ms-order/src/main/kotlin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-product/src/main/kotlin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-stock/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared/src/main/kotlin" charset="UTF-8" />
   </component>
 </project>

@@ -8,6 +8,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="ms-auth" />
         <module name="ms-config" />
+        <module name="ms-product" />
+        <module name="ms-stock" />
         <module name="ms-order" />
       </profile>
     </annotationProcessing>
@@ -20,6 +22,8 @@
       <module name="ms-auth" options="-parameters" />
       <module name="ms-config" options="-parameters" />
       <module name="ms-order" options="-parameters" />
+      <module name="ms-product" options="-parameters" />
+      <module name="ms-stock" options="-parameters" />
       <module name="shared" options="-parameters" />
     </option>
   </component>
