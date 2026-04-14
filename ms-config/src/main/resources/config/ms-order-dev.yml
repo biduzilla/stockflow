@@ -1,10 +1,6 @@
 spring:
   application:
     name: ms-order
-  profiles:
-    active: dev
-  config:
-    import: optional:configserver:http://localhost:8071
   flyway:
     depends-on: entityManagerFactory
   datasource:
