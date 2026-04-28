@@ -8,7 +8,7 @@ import java.util.UUID
 
 @FeignClient(
     name = "product-service",
-    url = $$"${product-service.url}"
+    url = $$"${product.service.url}"
 )
 interface ProductClient {
     @GetMapping("/{id}")

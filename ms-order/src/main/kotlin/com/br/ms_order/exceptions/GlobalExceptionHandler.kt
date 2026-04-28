@@ -1,6 +1,6 @@
 package com.br.ms_order.exceptions
 
-import com.br.ms_order.dto.ErrorDTO
+import com.br.ms_product.dtos.ErrorDTO
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -29,6 +29,21 @@ class GlobalExceptionHandler {
         )
     }
 
+    @ExceptionHandler(BadRequestException::class)
+    fun handleBadRequestException(
+        exception: BadRequestException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorDTO> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorDTO(
+                status = HttpStatus.BAD_REQUEST.value(),
+                error = HttpStatus.BAD_REQUEST.name,
+                message = exception.message,
+                path = request.servletPath
+            )
+        )
+    }
+
     @ExceptionHandler(InvalidTokenException::class)
     fun handleInvalidTokenException(
         exception: InvalidTokenException,
@@ -38,6 +53,21 @@ class GlobalExceptionHandler {
             ErrorDTO(
                 status = HttpStatus.UNAUTHORIZED.value(),
                 error = HttpStatus.UNAUTHORIZED.name,
+                message = exception.message,
+                path = request.servletPath
+            )
+        )
+    }
+
+    @ExceptionHandler(NotFoundException::class)
+    fun handleNotFoundException(
+        exception: NotFoundException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorDTO> {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ErrorDTO(
+                status = HttpStatus.NOT_FOUND.value(),
+                error = HttpStatus.NOT_FOUND.name,
                 message = exception.message,
                 path = request.servletPath
             )

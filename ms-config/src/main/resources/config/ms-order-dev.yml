@@ -1,8 +1,25 @@
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: usage-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: >
+                StockInsufficientEvent:com.br.ms_order.kafka.events.StockInsufficientEvent,
+                StockReservedEvent:com.br.ms_order.kafka.events.StockReservedEvent
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
   application:
     name: ms-order
-  flyway:
-    depends-on: entityManagerFactory
   datasource:
     url: jdbc:postgresql://localhost:5432/ms
     username: ms_user

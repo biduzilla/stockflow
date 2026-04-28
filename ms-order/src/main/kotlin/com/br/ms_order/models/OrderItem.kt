@@ -10,10 +10,14 @@ data class OrderItem(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
-    @ManyToOne
-    @JoinColumn(name = "productId")
+
+    @Column(name = "product_id")
     var productId: UUID? = null,
     var quantity: Int = 1,
     var unitPrice: BigDecimal = BigDecimal.ZERO,
     var totalPrice: BigDecimal = BigDecimal.ZERO,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    var order: Order? = null
 )
