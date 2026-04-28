@@ -33,3 +33,5 @@ build/
 .vscode/
 
 ms-product/src/main/resources/keys/publicKey.pem
+*.pem
+*.key

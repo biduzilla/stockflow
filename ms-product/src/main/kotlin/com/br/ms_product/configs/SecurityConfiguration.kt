@@ -28,28 +28,16 @@ class SecurityConfiguration(
     @Bean
     @Throws(Exception::class)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        println("**** SECURITY ATIVA ****")
-
         http
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
-                auth
-                    .requestMatchers("/hello/hello").authenticated()
-                    .anyRequest().authenticated()
+                auth.anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint) }
             .authenticationProvider(jwtAuthenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
-        val filterChain = http.build()
-
-        println("=== FilterChain construída ===")
-        println("Filtros na cadeia:")
-        filterChain.filters.forEachIndexed { index, filter ->
-            println("  $index: ${filter.javaClass.simpleName}")
-        }
-
-        return filterChain
+        return http.build()
     }
 }

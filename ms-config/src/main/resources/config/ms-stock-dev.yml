@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: ms-stock
+  flyway:
+    depends-on: entityManagerFactory
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms
+    username: ms_user
+    password: ms123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    format_sql: true
+
+server:
+  port: 8084
+
+security:
+  jwt:
+    public-key: classpath:keys/publicKey.pem
+
+product:
+  service:
+    url: http://device-service:8083/api/products
