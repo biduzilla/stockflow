@@ -7,6 +7,7 @@ import com.br.ms_stock.exceptions.NotFoundException
 import com.br.ms_stock.models.Stock
 import com.br.ms_stock.repositories.StockRepository
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.stereotype.Service
 import java.util.*
 
 interface IStockService {
@@ -15,6 +16,7 @@ interface IStockService {
     fun delete(id: UUID)
 }
 
+@Service
 class StockService(
     private val stockRepository: StockRepository,
     private val productClient: ProductClient,

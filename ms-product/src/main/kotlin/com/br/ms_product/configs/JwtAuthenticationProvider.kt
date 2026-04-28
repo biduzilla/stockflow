@@ -1,6 +1,6 @@
 package com.br.ms_product.configs
 
-import com.br.ms_order.exceptions.InvalidTokenException
+import com.br.ms_product.exceptions.InvalidTokenException
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication

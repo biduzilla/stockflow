@@ -1,6 +1,6 @@
 package com.br.ms_stock.exceptions
 
-import com.br.ms_product.dtos.ErrorDTO
+import com.br.ms_stock.dtos.ErrorDTO
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

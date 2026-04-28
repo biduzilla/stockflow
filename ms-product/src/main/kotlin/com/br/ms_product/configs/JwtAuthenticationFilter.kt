@@ -1,6 +1,6 @@
 package com.br.ms_product.configs
 
-import com.br.ms_order.security.IJwtService
+import com.br.ms_product.security.IJwtService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

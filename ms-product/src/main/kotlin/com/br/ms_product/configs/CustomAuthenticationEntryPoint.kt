@@ -1,6 +1,6 @@
 package com.br.ms_product.configs
 
-import com.br.ms_order.exceptions.InvalidTokenException
+import com.br.ms_product.exceptions.InvalidTokenException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.AuthenticationException

@@ -8,8 +8,8 @@
         <option value="$PROJECT_DIR$/ms-order/pom.xml" />
         <option value="$PROJECT_DIR$/ms-config/pom.xml" />
         <option value="$PROJECT_DIR$/shared/pom.xml" />
-        <option value="$PROJECT_DIR$/ms-product/pom.xml" />
         <option value="$PROJECT_DIR$/ms-stock/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-product/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

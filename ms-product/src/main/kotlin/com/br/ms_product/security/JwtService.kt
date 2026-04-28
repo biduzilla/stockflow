@@ -20,7 +20,7 @@ interface IJwtService {
 
 @Service
 class JwtService(
-    @Value($$"${security.jwt.public-key}") private val publicKeyResource: Resource,
+    @Value($$"${security.jwt.public-key}")  private val publicKeyResource: Resource,
 ) : IJwtService {
     private val publicKey: PublicKey by lazy { loadPublicKey() }
 
