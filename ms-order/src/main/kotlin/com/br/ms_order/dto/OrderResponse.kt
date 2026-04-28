@@ -3,7 +3,7 @@ package com.br.ms_order.dto
 import com.br.ms_order.enums.OrderStatusEnum
 import java.math.BigDecimal
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class OrderResponse(
     val id: UUID,

@@ -11,8 +11,8 @@ spring:
           json:
             type:
               mapping: >
-                StockInsufficientEvent:com.br.ms_order.kafka.events.StockInsufficientEvent,
-                StockReservedEvent:com.br.ms_order.kafka.events.StockReservedEvent
+                StockInsufficientEvent:com.br.kafka.event.StockInsufficientEvent,
+                StockReservedEvent:com.br.kafka.event.StockReservedEvent
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

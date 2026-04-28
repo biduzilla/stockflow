@@ -1,7 +1,7 @@
 package com.br.kafka.event
 
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class StockLowEvent(
     val eventId: UUID = UUID.randomUUID(),
